@@ -15,9 +15,9 @@ export const errorHandler = (
     return;
   }
 
-  console.error("Erreur non gérée :", err);
+  console.error("Unhandled error:", err);
   res.status(500).json({
     success: false,
-    message: "Erreur interne du serveur",
+    message: "Internal server error",
   });
 };
