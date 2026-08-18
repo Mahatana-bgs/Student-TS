@@ -85,3 +85,5 @@ class Database {
         return this.isConnected;
     }
 }
+
+export default Database.getInstance();
