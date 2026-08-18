@@ -11,3 +11,26 @@ export interface Student {
 export type StudentInput = Omit<Student, "id">;
 
 export type StudentUpdateInput = Partial<StudentInput>;
+
+export interface StudentStatistics {
+  totalStudents: number;
+  byMajor: { major: string; count: number }[];
+  averageAge: number | null;
+  recentStudents: Student[];
+  totalByMajor: number;
+}
+
+export interface PaginationResult {
+  students: Student[];
+  pagination: {
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+  };
+}
+
+export interface StudentSearchResult {
+  students: Student[];
+  count: number;
+}
