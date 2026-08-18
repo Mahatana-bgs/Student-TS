@@ -66,7 +66,7 @@ class Database {
   ): Promise<QueryResult<T>> {
     const client = await this.pool.connect();
     try {
-      const result = await client.query<T>(text, params);
+      const result = await client.query<T>(text, param);
       return result;
     } finally {
       client.release();
