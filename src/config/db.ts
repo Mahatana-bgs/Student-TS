@@ -1,23 +1,62 @@
-import { Pool } from "pg";
+import { Pool, PoolConfig, QueryResult, QueryResultRow } from "pg";
 import dotenv from "dotenv";
 
 dotenv.config();
 
-// PostgreSQL connection pool, reused across the whole app.
-// Values come from the .env file (see .env.example).
-export const pool = new Pool({
+const poolConfig: PoolConfig ={
   host: process.env.DB_HOST || "localhost",
   port: Number(process.env.DB_PORT) || 5432,
   user: process.env.DB_USER || "postgres",
   password: process.env.DB_PASSWORD || "postgres",
   database: process.env.DB_NAME || "school_db",
-});
+  max: Number (process.env.DB_MAX_POOL) || 20,
+  idleTimeoutMillis: Number(process.env.DB_CONNECTION_TIMEOUT) || 30000,
+  connectionTimeoutMillis: Number(process.env.DB_CONNECTION_TIMEOUT) || 2000,
+};
 
-pool.on("connect", () => {
-  console.log("Connected to PostgreSQL");
-});
+class Database {
+  private static instance: Database;
+  private pool: Pool;
+  private isConnected: boolean = false;
 
-pool.on("error", (err) => {
-  console.error("Unexpected error on the PostgreSQL pool:", err);
-  process.exit(1);
-});
+  private constructor(){
+    this.pool = new Pool(poolConfig);
+
+    this.pool.on('connect', () => {
+      console.log('PostgreSQL connected');
+      this.isConnected = new true;
+    });
+
+    this.pool.on('error', (err) => {
+      console.error('Unexpected error on PostgreSQL pool: ', err);
+      this.isConnected = false;
+    });
+  }
+
+  public static getInstance(): Database {
+    if (!Database.instance) {
+      Database.instance = new Database();
+    }
+    return Database.instance;
+  }
+
+  public async connect(): Promise<void> {
+    try {
+      const client = await this.pool.connect();
+      console.log('PostgreSQL connection successful');
+      client.release();
+      this.isConnected = true;  
+    } catch (err) {
+      console.error('PostgreSql connection error: ', err);
+      process.exit(1);
+    }
+  }
+
+  public async disconnect(): Promise<void> {
+    if(this.isConnected){
+      await this.pool.end();
+      this.isConnected = false;
+
+    }
+  }
+}
