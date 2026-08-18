@@ -59,4 +59,29 @@ class Database {
 
     }
   }
+
+  public async query<T extends QueryResultRow = any>(
+    text:  string,
+    param?: any[]
+  ): Promise<QueryResult<T>> {
+    const client = await this.pool.connect();
+    try {
+      const result = await client.query<T>(text, params);
+      return result;
+    } finally {
+      client.release();
+    }
+  }
+
+  public async getClient() {
+        return await this.pool.connect();
+    }
+
+    public getPool(): Pool {
+        return this.pool;
+    }
+
+    public getConnectionStatus(): boolean {
+        return this.isConnected;
+    }
 }
