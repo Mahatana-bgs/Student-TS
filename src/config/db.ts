@@ -56,7 +56,8 @@ class Database {
     if(this.isConnected){
       await this.pool.end();
       this.isConnected = false;
-
+      console.log('PostgreSQL disconnected');
+      
     }
   }
 
