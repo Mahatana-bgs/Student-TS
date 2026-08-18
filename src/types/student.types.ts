@@ -1,3 +1,4 @@
+//student.types.ts
 export interface Student {
   id: number;
   last_name: string;

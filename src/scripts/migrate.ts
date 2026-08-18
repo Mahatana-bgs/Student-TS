@@ -1,3 +1,4 @@
+//migrate.ts
 import database from '../config/db';
 import dotenv from 'dotenv';
 

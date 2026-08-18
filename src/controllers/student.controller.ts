@@ -1,3 +1,4 @@
+//student.controller.ts
 import { Request, Response } from "express";
 import * as StudentModel from "../models/student.model";
 import { ApiError } from "../utils/ApiError";

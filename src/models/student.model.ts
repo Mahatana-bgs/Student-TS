@@ -1,8 +1,7 @@
+//student.model.ts
 import { pool } from "../config/db";
 import { Student, StudentInput, StudentUpdateInput } from "../types/student.types";
 
-// All functions here are arrow functions.
-// This is the only layer of the code that speaks SQL / PostgreSQL directly.
 
 export const findAll = async (): Promise<Student[]> => {
   const result = await pool.query<Student>(
@@ -30,7 +29,6 @@ export const create = async (data: StudentInput): Promise<Student> => {
   return result.rows[0];
 };
 
-// PUT: full replacement of the resource
 export const replace = async (
   id: number,
   data: StudentInput
@@ -46,8 +44,6 @@ export const replace = async (
   return result.rows[0] ?? null;
 };
 
-// PATCH: partial update, the SQL query is built dynamically
-// based on the fields actually sent.
 export const update = async (
   id: number,
   data: StudentUpdateInput

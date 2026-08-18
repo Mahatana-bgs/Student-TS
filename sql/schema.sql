@@ -1,3 +1,5 @@
+//schema.sql
+
 CREATE TABLE IF NOT EXISTS students (
     id              SERIAL PRIMARY KEY,
     last_name       VARCHAR(100) NOT NULL,
