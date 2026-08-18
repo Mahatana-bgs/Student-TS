@@ -24,7 +24,7 @@ class Database {
 
     this.pool.on('connect', () => {
       console.log('PostgreSQL connected');
-      this.isConnected = new true;
+      this.isConnected = true;
     });
 
     this.pool.on('error', (err) => {
