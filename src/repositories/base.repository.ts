@@ -1,4 +1,5 @@
-import { pool, Database } from '../config/db';
+import { pool } from '../config/db';
+import database from '../config/db';
 import { QueryResult } from 'pg';
 
 export class BaseRepository<T> {
@@ -9,7 +10,7 @@ export class BaseRepository<T> {
     }
 
     protected async query(text: string, params?: any[]): Promise<QueryResult> {
-        return await Database.getInstance().query(text, params);
+        return await database.query(text, params);
     }
 
     async findAll(): Promise<T[]> {

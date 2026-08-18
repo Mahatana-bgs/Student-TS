@@ -14,6 +14,8 @@ const poolConfig: PoolConfig ={
   connectionTimeoutMillis: Number(process.env.DB_CONNECTION_TIMEOUT) || 2000,
 };
 
+export const pool = new Pool(poolConfig);
+
 class Database {
   private static instance: Database;
   private pool: Pool;
