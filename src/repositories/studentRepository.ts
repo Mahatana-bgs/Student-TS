@@ -1,7 +1,8 @@
 import { pool } from '../config/db';
-import { Student, StudentInput, StudentUpdateInput } from '../types/student.types';
-import { BaseRepository } from './base.repository';
+import { Student, StudentInput, StudentUpdateInput } from '../types/studentTypes';
+import { BaseRepository } from './baseRepository';
 
+const ALLOWED_COLUMNS = ['last_name', 'first_name', 'email', 'major', 'date_of_birth', 'age', 'grade'];
 export class StudentRepository extends BaseRepository<Student> {
     constructor() {
         super('students');
@@ -46,10 +47,18 @@ export class StudentRepository extends BaseRepository<Student> {
     }
 
     async update(id: number, data: StudentUpdateInput): Promise<Student | null> {
-        const keys = Object.keys(data) as (keyof StudentUpdateInput)[];
+        const keys = Object.keys(data).filter(key => 
+            ALLOWED_COLUMNS.includes(key)
+        ) as (keyof StudentUpdateInput)[];
 
         if (keys.length === 0) {
             return this.findById(id);
+        }
+
+        for (const key of keys) {
+            if (!ALLOWED_COLUMNS.includes(key as string)) {
+                throw new Error(`Invalid column: ${key}`);
+            }
         }
 
         const setClause = keys.map((key, i) => `${key} = $${i + 1}`).join(", ");
@@ -70,24 +79,27 @@ export class StudentRepository extends BaseRepository<Student> {
         return (result.rowCount ?? 0) > 0;
     }
 
+    async search(searchTerm: string): Promise<Student[]> {
+        const sanitizedTerm = searchTerm.replace(/[%_]/g, '\\$&');
+        
+        const result = await pool.query<Student>(
+            `SELECT * FROM students 
+            WHERE first_name ILIKE $1 
+                OR last_name ILIKE $1 
+                OR email ILIKE $1
+            ORDER BY last_name, first_name
+            LIMIT 20`,
+            [`%${sanitizedTerm}%`]
+        );
+        return result.rows;
+    }
+
     async findByEmail(email: string): Promise<Student | null> {
         const result = await pool.query<Student>(
             "SELECT * FROM students WHERE email = $1",
             [email]
         );
         return result.rows[0] ?? null;
-    }
-
-    async search(searchTerm: string): Promise<Student[]> {
-        const result = await pool.query<Student>(
-            `SELECT * FROM students 
-             WHERE first_name ILIKE $1 
-                OR last_name ILIKE $1 
-                OR email ILIKE $1
-             LIMIT 20`,
-            [`%${searchTerm}%`]
-        );
-        return result.rows;
     }
 
     async getStatisticsByMajor(): Promise<{ major: string; count: number }[]> {
@@ -116,8 +128,9 @@ export class StudentRepository extends BaseRepository<Student> {
             values.push(filter.major);
         }
         if (filter.search) {
+            const sanitizedSearch = filter.search.replace(/[%_]/g, '\\$&');
             whereClause += ` AND (first_name ILIKE $${paramIndex++} OR last_name ILIKE $${paramIndex++})`;
-            values.push(`%${filter.search}%`, `%${filter.search}%`);
+            values.push(`%${sanitizedSearch}%`, `%${sanitizedSearch}%`);
         }
 
         const countResult = await pool.query(
@@ -144,6 +157,13 @@ export class StudentRepository extends BaseRepository<Student> {
             [limit]
         );
         return result.rows;
+    }
+
+    async count(): Promise<number> {
+        const result = await pool.query(
+            "SELECT COUNT(*) FROM students"
+        );
+        return parseInt(result.rows[0].count);
     }
 }
 

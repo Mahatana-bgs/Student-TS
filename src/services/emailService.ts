@@ -1,4 +1,4 @@
-import { Student } from '../types/student.types';
+import { Student } from '../types/studentTypes';
 
 class EmailService {
     private static instance: EmailService;

@@ -1,6 +1,6 @@
 import express from "express";
 import cors from "cors";
-import studentRoutes from "./routes/student.routes";
+import studentRoutes from "./routes/studentRoutes";
 import { errorHandler, notFound } from "./middlewares/errorHandler";
 import { ApiError } from "./utils/ApiError";
 

@@ -1,5 +1,5 @@
-import studentRepository from '../repositories/student.repository';
-import { Student } from '../types/student.types';
+import studentRepository from '../repositories/studentRepository';
+import { Student } from '../types/studentTypes';
 
 interface StatisticsResponse {
     totalStudents: number;

@@ -1,7 +1,7 @@
-import studentRepository from '../repositories/student.repository';
-import emailService from './email.service';
+import studentRepository from '../repositories/studentRepository';
+import emailService from './emailService';
 import { ApiError } from '../utils/ApiError';
-import { Student, StudentInput, StudentUpdateInput } from '../types/student.types';
+import { Student, StudentInput, StudentUpdateInput } from '../types/studentTypes';
 
 class StudentService {
     private static instance: StudentService;
@@ -14,6 +14,12 @@ class StudentService {
         }
         return StudentService.instance;
     }
+
+    private validateEmail(email: string): boolean {
+        const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+        return emailRegex.test(email);
+    }
+
 
     async createStudent(data: StudentInput): Promise<Student> {
         if (!emailService.validateEmail(data.email)) {
@@ -54,8 +60,8 @@ class StudentService {
     async updateStudent(id: number, data: StudentUpdateInput): Promise<Student> {
         await this.getStudentById(id);
 
-        if (data.email) {
-            if (!emailService.validateEmail(data.email)) {
+        if (data.email !== undefined) {
+            if (!this.validateEmail(data.email)) {
                 throw new ApiError(400, 'Invalid email format');
             }
             const existingStudent = await studentRepository.findByEmail(data.email);
@@ -79,7 +85,15 @@ class StudentService {
             throw new ApiError(400, 'Invalid email format');
         }
 
-        const student = await studentRepository.replace(id, data);
+        const allowedFields = ['last_name', 'first_name', 'email', 'major', 'date_of_birth'];
+        const filteredData: any = {};
+        for (const key of allowedFields) {
+            if (data[key as keyof StudentUpdateInput] !== undefined) {
+                filteredData[key] = data[key as keyof StudentUpdateInput];
+            }
+        }
+
+        const student = await studentRepository.update(id, filteredData);
         if (!student) {
             throw new ApiError(404, `Student with id ${id} not found`);
         }
@@ -123,6 +137,8 @@ class StudentService {
         const allStudents = await studentRepository.findAll();
         return allStudents.filter(s => s.major === major);
     }
+
+    
 }
 
 export default StudentService.getInstance();

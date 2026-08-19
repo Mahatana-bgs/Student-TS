@@ -11,7 +11,7 @@ import {
   searchStudents,
   getStudentsWithPagination,
   getStatistics,
-} from "../controllers/student.controller";
+} from "../controllers/studentController";
 
 const router = Router();
 
