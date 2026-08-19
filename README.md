@@ -1,142 +1,38 @@
-# CRUD REST API — "Students" (TypeScript + Express + PostgreSQL)
+# React + TypeScript + Vite Starter
 
-This project covers:
-- A full CRUD (Create, Read, Update, Delete)
-- Centralized error handling
-- Testing the API with Postman / Thunder Client
+A lightweight React setup powered by Vite, with Hot Module Replacement and a pre-configured ESLint baseline out of the box.
 
-All the logic (controllers, routes, model) is written using
-**arrow functions** (`const x = async () => {}`) rather than classic
-`function` declarations.
+## Fast Refresh
 
-## 1. Project structure
+Two official Vite plugins can handle Fast Refresh for React:
 
-```
-crud-students-api/
-├── sql/
-│   └── schema.sql              # table creation + sample data
-├── src/
-│   ├── config/db.ts            # PostgreSQL connection pool
-│   ├── controllers/            # business logic (CRUD), arrow functions
-│   ├── middlewares/
-│   │   ├── asyncHandler.ts     # catches errors from async functions
-│   │   └── errorHandler.ts     # centralized error handling
-│   ├── models/                 # SQL queries (data access layer)
-│   ├── routes/                 # HTTP method -> controller mapping
-│   ├── types/                  # TypeScript interfaces
-│   ├── utils/ApiError.ts       # custom error class
-│   ├── app.ts                  # Express config (middlewares, routes)
-│   └── server.ts               # entry point
-├── .env.example
-├── .gitignore
-├── package.json
-└── tsconfig.json
-```
+- **[@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react)** — built on top of [Oxc](https://oxc.rs)
+- **[@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react)** — built on top of [SWC](https://swc.rs/)
 
-## 2. Create the PostgreSQL database
+Either one works fine for local development; pick whichever your setup already uses.
 
-If PostgreSQL isn't installed yet, download it from
-https://www.postgresql.org/download/ (on Windows, the installer also
-includes **pgAdmin** and the `psql` command-line tool).
+## About the React Compiler
 
-### Option A — via psql (command line)
+This starter ships without the React Compiler enabled, mainly to keep dev and build times fast. If you want to opt in, follow the official guide: [react.dev/learn/react-compiler](https://react.dev/learn/react-compiler/installation).
 
-Open a terminal (on Windows: "SQL Shell (psql)" installed alongside
-PostgreSQL, or a regular terminal if `psql` is on your PATH):
+## Linting
 
-```bash
-psql -U postgres
-```
+The base ESLint config here covers the essentials. For a production-grade app, it's worth switching to type-aware rules via `typescript-eslint`, and optionally adding:
 
-Enter the password you set during installation. Once connected:
+- `eslint-plugin-react-x` — React-specific linting
+- `eslint-plugin-react-dom` — DOM-related React rules
 
-```sql
-CREATE DATABASE school_db;
-\c school_db
-```
+## Available Scripts
 
-Then paste the contents of `sql/schema.sql`, or run directly:
+| Command           | Description                        |
+| ------------------ | ----------------------------------- |
+| `npm run dev`      | Start the dev server with HMR      |
+| `npm run build`    | Type-check and build for production |
+| `npm run preview`  | Preview the production build       |
+| `npm run lint`     | Run ESLint across the project      |
 
-```bash
-psql -U postgres -d school_db -f sql/schema.sql
-```
+## Tech Stack
 
-### Option B — via pgAdmin (graphical interface)
-
-1. Open pgAdmin and connect to the local server.
-2. Right-click **Databases** → **Create** → **Database…**
-3. Name it `school_db` → **Save**.
-4. Right-click `school_db` → **Query Tool**, paste the contents of
-   `sql/schema.sql`, then run it (▶️).
-
-You should now have a `students` table with 2 sample rows.
-
-## 3. Configure the connection (.env)
-
-Copy `.env.example` to `.env` and adjust the values to your setup:
-
-```bash
-cp .env.example .env
-```
-
-```
-PORT=3000
-DB_HOST=localhost
-DB_PORT=5432
-DB_USER=postgres
-DB_PASSWORD=your_password
-DB_NAME=school_db
-```
-
-`src/config/db.ts` reads this file to create the `pg` `Pool` — this is
-the link between the API and the database.
-
-## 4. Install dependencies and start the server
-
-```bash
-npm install
-npm run dev
-```
-
-You should see in the console:
-
-```
-Connected to PostgreSQL
-Server running on http://localhost:3000
-```
-
-## 5. Test with Postman / Thunder Client
-
-| Action              | Method | URL             | Body (JSON)                                                                          |
-|---------------------|--------|-----------------|----------------------------------------------------------------------------------------|
-| List all students   | GET    | `/students`     | —                                                                                       |
-| Read one student    | GET    | `/students/1`   | —                                                                                       |
-| Create a student    | POST   | `/students`     | `{ "last_name": "Doe", "first_name": "Tom", "email": "tom@example.com", "major": "Web", "date_of_birth": "2002-05-10" }` |
-| Full update         | PUT    | `/students/1`   | all fields required                                                                     |
-| Partial update      | PATCH  | `/students/1`   | e.g. `{ "major": "Data" }`                                                              |
-| Delete               | DELETE | `/students/1`   | —                                                                                       |
-
-Also try a couple of intentional errors to verify the centralized handling:
-- `GET /students/999` → `404` with `{ "success": false, "message": "..." }`
-- `POST /students` with an empty body → `400`
-- A route that doesn't exist, e.g. `GET /whatever` → generic `404`
-
-## 6. Build for production (optional)
-
-```bash
-npm run build   # compiles src/ -> dist/ (JS)
-npm start       # runs dist/server.js
-```
-
-## How does the centralized error handling work?
-
-1. A controller (e.g. `getStudentById`) does `throw new ApiError(404, "...")`
-   if the student doesn't exist — no try/catch.
-2. Since the route is registered via `asyncHandler(getStudentById)`, any
-   thrown error or rejected promise is automatically passed to `next(err)`.
-3. Express routes it to the `errorHandler` middleware (declared last in
-   `app.ts`), which returns a consistent JSON response with the right
-   HTTP status code.
-
-Result: no repeated `try/catch` blocks in the controllers, and a single
-place to change if you ever want to alter the error response format.
+- React
+- TypeScript
+- Vite
