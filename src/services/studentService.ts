@@ -1,7 +1,7 @@
-import studentRepository from '../repositories/student.repository';
-import emailService from './email.service';
+import studentRepository from '../repositories/studentRepository';
+import emailService from './emailService';
 import { ApiError } from '../utils/ApiError';
-import { Student, StudentInput, StudentUpdateInput } from '../types/student.types';
+import { Student, StudentInput, StudentUpdateInput } from '../types/studentTypes';
 
 class StudentService {
     private static instance: StudentService;

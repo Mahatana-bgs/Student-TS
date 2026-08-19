@@ -1,6 +1,6 @@
 import { pool } from '../config/db';
-import { Student, StudentInput, StudentUpdateInput } from '../types/student.types';
-import { BaseRepository } from './base.repository';
+import { Student, StudentInput, StudentUpdateInput } from '../types/studentTypes';
+import { BaseRepository } from './baseRepository';
 
 export class StudentRepository extends BaseRepository<Student> {
     constructor() {

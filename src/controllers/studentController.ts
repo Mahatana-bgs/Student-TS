@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from "express";
-import studentService from "../services/student.service";
-import statisticsService from "../services/statistics.service";
+import studentService from "../services/studentService";
+import statisticsService from "../services/statisticsService";
 import { ApiError } from "../utils/ApiError";
 
 
