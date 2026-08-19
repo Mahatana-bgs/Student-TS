@@ -2,6 +2,7 @@ node_modules/
 
 dist/
 
+env.ts
 .env
 .env.example
 npm-debug.log*
