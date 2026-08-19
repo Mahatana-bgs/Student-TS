@@ -4,17 +4,18 @@ dotenv.config();
 import app from "./app";
 import database from "./config/db";
 
-const PORT = process.env.PORT || 3000;
+const PORT = parseInt(process.env.PORT || '3000');
 
 const startServer = async () => {
   try {
     await database.connect();
     
-    app.listen(PORT, () => {
-      console.log(`🚀 Server running on http://localhost:${PORT}`);
-      console.log(`📝 Environment: ${process.env.NODE_ENV || 'development'}`);
-      console.log(`🗄️  Database: ${process.env.DB_NAME || 'school_db'}`);
-    });
+    app.listen(PORT, '0.0.0.0', () => {
+            console.log(` Server running on port ${PORT}`);
+            console.log(` Environment: ${process.env.NODE_ENV || 'development'}`);
+            console.log(` Database: ${process.env.DB_NAME || 'school_db'}`);
+            console.log(` http://localhost:${PORT}`);
+        });
   } catch (error) {
     console.error("Failed to start server:", error);
     process.exit(1);
