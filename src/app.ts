@@ -1,4 +1,3 @@
-//app.ts
 import express from "express";
 import cors from "cors";
 import studentRoutes from "./routes/student.routes";

@@ -12,7 +12,7 @@ const poolConfig: PoolConfig ={
         host: process.env.DB_HOST || "dpg-da2f12on74is73fsjp70-a",
         port: Number(process.env.DB_PORT) || 5432,
         user: process.env.DB_USER || "raven",
-        password: process.env.DB_PASSWORD || "YtJxLVopN1DkAXuPZUAmdJF8OKXeOAj6",
+        password: process.env.DB_PASSWORD || "",
         database: process.env.DB_NAME || "school_db_dnis",
     }),
 
